@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Task Manager</title>
+
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      width: 400px;
+      background-color: #ffffff;
+      padding: 24px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+      color: #333;
+    }
+
+    .input-section {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #dcdcdc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #4a90e2;
+    }
+
+    button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 6px;
+      background-color: #4a90e2;
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background-color: #357ab8;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 15px;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fafafa;
+      border: 1px solid #eeeeee;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    li span {
+      cursor: pointer;
+      color: #333;
+    }
+
+    li.completed span {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    .actions button {
+      margin-left: 6px;
+      background-color: #e74c3c;
+    }
+
+    .actions button:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Task Manager</h1>
+
+    <div class="input-section">
+      <input type="text" id="taskInput" placeholder="Enter task">
+      <button onclick="addTask()">Add</button>
+    </div>
+
+    <ul id="taskList"></ul>
+  </div>
+
+<script>
+function loadTasks() {
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  const list = document.getElementById("taskList");
+  list.innerHTML = "";
+
+  tasks.forEach((task, index) => {
+    const li = document.createElement("li");
+    if (task.completed) li.classList.add("completed");
+
+    li.innerHTML = `
+      <span onclick="toggleTask(${index})">${task.title}</span>
+      <div class="actions">
+        <button onclick="editTask(${index})">Edit</button>
+        <button onclick="deleteTask(${index})">Delete</button>
+      </div>
+    `;
+
+    list.appendChild(li);
+  });
+}
+
+function addTask() {
+  const input = document.getElementById("taskInput");
+  if (!input.value) return;
+
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+  tasks.push({ title: input.value, completed: false });
+
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  input.value = "";
+  loadTasks();
+}
+
+function deleteTask(index) {
+  const tasks = JSON.parse(localStorage.getItem("tasks"));
+  tasks.splice(index, 1);
+
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  loadTasks();
+}
+
+function toggleTask(index) {
+  const tasks = JSON.parse(localStorage.getItem("tasks"));
+  tasks[index].completed = !tasks[index].completed;
+
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  loadTasks();
+}
+
+function editTask(index) {
+  const tasks = JSON.parse(localStorage.getItem("tasks"));
+  const newTitle = prompt("Edit task:", tasks[index].title);
+
+  if (!newTitle) return;
+
+  tasks[index].title = newTitle;
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  loadTasks();
+}
+
+loadTasks();
+</script>
+
+</body>
+</html>
